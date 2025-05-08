@@ -367,7 +367,7 @@ if (isset($_GET['file'])) {
         }
         
         .terminal-title {
-            color: var(--dark);
+            color: var(--light-text);
             font-size: 0.8rem;
             font-weight: bold;
         }
