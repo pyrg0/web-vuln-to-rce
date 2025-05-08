@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+    environment:
+      - APACHE_RUN_USER=www-data
+      - APACHE_RUN_GROUP=www-data
+      - FLAG_COMMAND_INJECTION=FOSSIL{command_injection_flag}
+      - FLAG_LFI=FOSSIL{lfi_flag}
+      - FLAG_FILE_UPLOAD=FOSSIL{file_upload_flag}
+      - FLAG_DIRECTORY_TRAVERSAL=FOSSIL{directory_traversal_flag}

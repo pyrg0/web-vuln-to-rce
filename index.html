@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOSSIL PENGEN RCE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .challenge {
+            background-color: white;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>FOSSIL PENGEN RCE</h1>
+    <p>Welcome to our Capture The Flag challenge! Below are the available challenges:</p>
+    
+    <div class="challenge">
+        <h2><a href="/challenges/command_injection/">Command Injection</a></h2>
+        <p>Can you execute system commands through the web interface?</p>
+    </div>
+    
+    <div class="challenge">
+        <h2><a href="/challenges/lfi/">Local File Inclusion</a></h2>
+        <p>Try to read sensitive files on the server through LFI vulnerability.</p>
+    </div>
+    
+    <div class="challenge">
+        <h2><a href="/challenges/file_upload/">File Upload</a></h2>
+        <p>Can you upload a malicious file to get RCE?</p>
+    </div>
+    
+    <div class="challenge">
+        <h2><a href="/challenges/directory_traversal/">Directory Traversal</a></h2>
+        <p>Navigate through server directories to find the flag.</p>
+    </div>
+</body>
+</html>
