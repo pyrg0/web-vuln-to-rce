@@ -4,5 +4,5 @@
 chown -R www-data:www-data /var/www/html
 chmod -R 755 /var/www/html
 
-# Start Apache
-exec apache2-foreground
+sudo chown www-data:www-data challenges/file_upload/uploads
+sudo chmod 755 challenges/file_upload/uploads
