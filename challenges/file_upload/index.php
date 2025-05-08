@@ -2,30 +2,65 @@
 $upload_dir = "uploads/";
 $message = '';
 
+// Make sure upload directory exists
+if (!is_dir($upload_dir)) {
+    mkdir($upload_dir, 0755, true);
+}
+
 if (isset($_FILES['file'])) {
     $file_name = $_FILES['file']['name'];
     $file_tmp = $_FILES['file']['tmp_name'];
     $file_size = $_FILES['file']['size'];
     $file_error = $_FILES['file']['error'];
     
-    // Intentionally weak validation
-    if ($file_error === UPLOAD_ERR_OK) {
-        $upload_path = $upload_dir . basename($file_name);
-        
-        // Move the uploaded file
-        if (move_uploaded_file($file_tmp, $upload_path)) {
-            $message = "<div class='upload-success'>
-                            <i class='fas fa-check-circle'></i>
+    // Get file extension
+    $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+    
+    // Define allowed extensions
+    $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
+    
+    // Check file extension
+    if (!in_array($file_ext, $allowed_extensions)) {
+        $message = "<div class='upload-error'>
+                        <i class='fas fa-exclamation-triangle'></i>
+                        <div class='message-content'>
+                            <div>Invalid file type!</div>
+                            <div>Only JPG, JPEG, PNG and GIF files are allowed.</div>
+                        </div>
+                    </div>";
+    } 
+    // Proceed with upload if extension is valid
+    elseif ($file_error === UPLOAD_ERR_OK) {
+        // Check if uploads directory is writable
+        if (!is_writable($upload_dir)) {
+            $message = "<div class='upload-error'>
+                            <i class='fas fa-exclamation-triangle'></i>
                             <div class='message-content'>
-                                <div>File uploaded successfully!</div>
-                                <div>Access your file at: <a href='$upload_path' target='_blank'>$upload_path</a></div>
+                                <div>Upload directory is not writable.</div>
+                                <div>Please check directory permissions.</div>
                             </div>
                         </div>";
         } else {
-            $message = "<div class='upload-error'>
-                            <i class='fas fa-times-circle'></i>
-                            <div class='message-content'>Error uploading file!</div>
-                        </div>";
+            $upload_path = $upload_dir . basename($file_name);
+            
+            // Move the uploaded file
+            if (move_uploaded_file($file_tmp, $upload_path)) {
+                $message = "<div class='upload-success'>
+                                <i class='fas fa-check-circle'></i>
+                                <div class='message-content'>
+                                    <div>File uploaded successfully!</div>
+                                    <div>Access your file at: <a href='$upload_path' target='_blank'>$upload_path</a></div>
+                                </div>
+                            </div>";
+            } else {
+                $message = "<div class='upload-error'>
+                                <i class='fas fa-times-circle'></i>
+                                <div class='message-content'>
+                                    <div>Error uploading file!</div>
+                                    <div>Error details: " . error_get_last()['message'] . "</div>
+                                </div>
+                            </div>";
+            }
         }
     } else {
         $message = "<div class='upload-error'>
@@ -564,6 +599,42 @@ if (is_dir($upload_dir)) {
             font-size: 1.2rem;
         }
         
+        .allowed-types {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        
+        .allowed-type {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 10px 15px;
+            background-color: rgba(0, 136, 255, 0.1);
+            border: 1px solid rgba(0, 136, 255, 0.3);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .allowed-type:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 136, 255, 0.2);
+        }
+        
+        .allowed-type i {
+            font-size: 1.5rem;
+            color: var(--secondary);
+        }
+        
+        .allowed-type span {
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        
         .tooltip {
             position: relative;
             display: inline-block;
@@ -666,15 +737,15 @@ if (is_dir($upload_dir)) {
                 <div class="title-badge">Vulnerable</div>
             </div>
             <div class="card-body">
-                <p>Upload your profile picture or any file you'd like to share. Our system accepts various file formats including JPEG, PNG, and GIF.</p>
+                <p>Upload your profile picture or any image file you'd like to share. For security reasons, our system <strong>only accepts image files</strong> with extensions: JPEG, PNG, and GIF.</p>
                 
                 <div class="upload-area">
                     <i class="fas fa-file-upload"></i>
                     <form action="" method="post" enctype="multipart/form-data" class="upload-form">
                         <div class="file-input-wrapper">
-                            <input type="file" name="file" id="file" class="file-input">
+                            <input type="file" name="file" id="file" class="file-input" accept=".jpg,.jpeg,.png,.gif">
                             <label for="file" class="file-input-label">
-                                <i class="fas fa-search"></i> Browse Files
+                                <i class="fas fa-search"></i> Browse Image Files
                             </label>
                             <div id="file-name" class="file-name">No file selected</div>
                         </div>
@@ -687,7 +758,26 @@ if (is_dir($upload_dir)) {
                 <div class="hint-banner">
                     <i class="fas fa-lightbulb"></i>
                     <div>
-                        <strong>Hint:</strong> Can you upload a file that allows you to execute code on the server?
+                        <strong>Hint:</strong> Only .jpg, .jpeg, .png, and .gif files are allowed. Can you find a way to bypass this restriction?
+                    </div>
+                </div>
+                
+                <div class="allowed-types">
+                    <div class="allowed-type">
+                        <i class="fas fa-file-image"></i>
+                        <span>.JPG</span>
+                    </div>
+                    <div class="allowed-type">
+                        <i class="fas fa-file-image"></i>
+                        <span>.JPEG</span>
+                    </div>
+                    <div class="allowed-type">
+                        <i class="fas fa-file-image"></i>
+                        <span>.PNG</span>
+                    </div>
+                    <div class="allowed-type">
+                        <i class="fas fa-file-image"></i>
+                        <span>.GIF</span>
                     </div>
                 </div>
                 
@@ -695,28 +785,6 @@ if (is_dir($upload_dir)) {
                     <?= $message ?>
                 <?php endif; ?>
                 
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-folder"></i> Uploaded Files</h2>
-                    </div>
-                    <div class="card-body">
-                        <div class="directory-container">
-                            <div class="directory-header">
-                                <div class="directory-title">
-                                    <i class="fas fa-folder-open"></i>
-                                    <span><?= realpath($upload_dir) ?></span>
-                                </div>
-                                <div class="tooltip">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span class="tooltiptext">This shows all uploaded files in the system. Try uploading different file types.</span>
-                                </div>
-                            </div>
-                            <div class="file-list">
-                                <?= $dir_contents ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
         
@@ -728,12 +796,31 @@ if (is_dir($upload_dir)) {
     </footer>
     
     <script>
-        // Show selected filename
+        // Show selected filename and validate file extension
         document.getElementById('file').addEventListener('change', function(e) {
-            const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
+            const fileInput = e.target;
             const fileNameElement = document.getElementById('file-name');
-            fileNameElement.textContent = fileName;
-            fileNameElement.style.display = 'block';
+            
+            if (fileInput.files.length > 0) {
+                const fileName = fileInput.files[0].name;
+                const fileExt = fileName.split('.').pop().toLowerCase();
+                
+                // Set file name display
+                fileNameElement.textContent = fileName;
+                fileNameElement.style.display = 'block';
+                
+                // Check if file extension is allowed
+                const allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
+                if (!allowedExts.includes(fileExt)) {
+                    fileNameElement.style.color = 'var(--danger)';
+                    fileNameElement.textContent = fileName + ' (Invalid file type)';
+                } else {
+                    fileNameElement.style.color = 'rgba(255, 255, 255, 0.7)';
+                }
+            } else {
+                fileNameElement.textContent = 'No file selected';
+                fileNameElement.style.display = 'block';
+            }
         });
     </script>
 </body>
