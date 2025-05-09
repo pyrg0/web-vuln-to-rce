@@ -13,6 +13,7 @@ cd web-vuln-to-rce
 ### 2. Jalankan Setup
 
 ```bash
+chmod +x start.sh
 sudo ./start.sh
 ```
 
